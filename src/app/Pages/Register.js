@@ -1,4 +1,4 @@
-import { SignInOrUpForm } from "app";
+import { SignInOrUpForm } from "../../firebase";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 // import { useCurrentUser } from "app";

@@ -1,7 +1,7 @@
-import { SignInOrUpForm } from "app";
+import { SignInOrUpForm } from "../../firebase";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-// import { useCurrentUser } from "app";
+import { useCurrentUser } from "../../firebase";
 
 export default function Login() {
   // Define theme colors to match the elegant design

@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-// import { useCurrentUser, auth } from "app";
+import { useCurrentUser, auth } from "../../firebase";
+import { useRouter } from "next/router";
 
 
 
 export default function Navbar() {
+  const router = useRouter();
   // Define theme colors
   const colors = {
     primary: "#8a5a44", // Warm brown for primary accents
@@ -15,7 +17,7 @@ export default function Navbar() {
   };
   const [activeDropdown, setActiveDropdown] = useState(" ");
 //   const { user, loading } = useCurrentUser();
-//   const navigate = useNavigate();
+  // const navigate = useNavigate();
   
   // Categories with their subcategories
   const categories = [
@@ -188,19 +190,21 @@ export default function Navbar() {
                   </div>
                 </div>
               </div>
-{/*            
-              <Link 
-                to="/login" 
-                className="text-gray-700 hover:text-black transition-colors transform hover:scale-110 duration-200 flex items-center space-x-1" 
-                aria-label="Sign In"
-                style={{ color: colors.dark }}
-              > */}
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-                <span className="text-xs font-medium">Sign In</span>
-              {/* </Link> */}
-           
+
+
+              <div className="flex items-center space-x-6">
+            <button
+              className="text-gray-700 hover:text-black transition-colors transform hover:scale-110 duration-200 flex items-center space-x-1"
+              onClick={() => router.push('/login')}
+              aria-label="Sign In"
+              style={{ color: '#2d2626' }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              <span className="text-xs font-medium">Sign In</span>
+            </button>
+          </div>
             
             {/* Location icon */}
             <button 
