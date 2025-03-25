@@ -1,7 +1,9 @@
+'use client'
+
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCurrentUser, auth } from "../../firebase";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 
 
@@ -195,7 +197,7 @@ export default function Navbar() {
               <div className="flex items-center space-x-6">
             <button
               className="text-gray-700 hover:text-black transition-colors transform hover:scale-110 duration-200 flex items-center space-x-1"
-              onClick={() => router.push('/login')}
+              onClick={() => router.push("/Login")}
               aria-label="Sign In"
               style={{ color: '#2d2626' }}
             >
