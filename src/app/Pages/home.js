@@ -1,12 +1,10 @@
-"use client"
-
 import React from "react";
-import  BannerCarousel  from "../app/Components/bannercarasouel";
-import  CategoryCard  from "../app/Components/categoryCard";
-import  ProductCard  from "../app/Components/productCard";
-import  SectionTitle  from "../app/Components/sectionTitle";
-import  Navbar  from "../app/Components/navbar";
-import { bannerImages, categories, bestSellers, newArrivals } from "./Mockdata/utils";
+import { BannerCarousel } from "components/BannerCarousel";
+import { CategoryCard } from "components/CategoryCard";
+import { ProductCard } from "components/ProductCard";
+import { SectionTitle } from "components/SectionTitle";
+import { Navbar } from "components/Navbar";
+import { bannerImages, categories, bestSellers, newArrivals } from "utils/mock-data";
 
 export default function App() {
   return (
