@@ -1,15 +1,24 @@
-import { createContext, useContext } from "react";
+"use client"
 
-// Create App Context
-const AppContext = createContext(null);
+import { createContext, useContext } from "react"
+
+// Create App Context with default values
+const AppContext = createContext({
+  state: {
+    user: null,
+    isLoggedIn: false,
+    loading: true,
+  },
+})
 
 // Custom Hook to Access Context
 export const useAppContext = () => {
-  const context = useContext(AppContext);
+  const context = useContext(AppContext)
   if (!context) {
-    throw new Error("useAppContext must be used within an AppProvider");
+    throw new Error("useAppContext must be used within an AppProvider")
   }
-  return context;
-};
+  return context
+}
 
-export default AppContext;
+export default AppContext
+
