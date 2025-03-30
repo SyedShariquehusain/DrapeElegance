@@ -6,8 +6,9 @@ import { useDispatch, useSelector } from "react-redux"
 import { addToCart } from "../../redux/slices/cartSlice"
 import { setSelectedProduct } from "../../redux/slices/productSlice"
 import Navbar from "../../Components/navbar"
-import { Heart, Share2, Minus, Plus, Check } from "lucide-react"
+import { Heart, Share2, Minus, Plus, Star, ShoppingBag, Truck, RefreshCw, Shield } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 
 export default function ProductDetail() {
   const { id } = useParams()
@@ -21,6 +22,7 @@ export default function ProductDetail() {
   const [activeImage, setActiveImage] = useState(0)
   const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 })
   const [showZoom, setShowZoom] = useState(false)
+  const [activeTab, setActiveTab] = useState("description")
   const imageRef = useRef(null)
 
   // Define theme colors
@@ -61,6 +63,25 @@ export default function ProductDetail() {
             fit: "Regular fit",
             origin: "Handcrafted in India",
           },
+          reviews: {
+            average: 4.8,
+            count: 124,
+            breakdown: {
+              5: 85,
+              4: 28,
+              3: 7,
+              2: 3,
+              1: 1,
+            },
+          },
+          specifications: [
+            { name: "Fabric", value: "Pure Cotton" },
+            { name: "Pattern", value: "Floral" },
+            { name: "Occasion", value: "Casual, Festive" },
+            { name: "Wash Care", value: "Dry Clean Only" },
+            { name: "Weight", value: "500g" },
+            { name: "Package Contents", value: "1 Saree with Blouse Piece" },
+          ],
         }
 
         setProduct(productWithImages)
@@ -148,6 +169,21 @@ export default function ProductDetail() {
     ? product.price - (product.price * product.discountPercentage) / 100
     : product.price
 
+  // Calculate rating stars
+  const renderRatingStars = (rating) => {
+    const stars = []
+    for (let i = 1; i <= 5; i++) {
+      if (i <= Math.floor(rating)) {
+        stars.push(<Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />)
+      } else if (i - 0.5 <= rating) {
+        stars.push(<Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />)
+      } else {
+        stars.push(<Star key={i} className="w-4 h-4 text-gray-300" />)
+      }
+    }
+    return stars
+  }
+
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
@@ -171,22 +207,41 @@ export default function ProductDetail() {
 
       {/* Product Detail */}
       <div className="max-w-7xl mx-auto px-4 py-8 md:py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16">
           {/* Product Images */}
-          <div className="space-y-4">
+          <div className="space-y-6">
             {/* Main Image with Zoom */}
             <div
-              className="relative overflow-hidden bg-gray-100 aspect-square"
+              className="relative overflow-hidden bg-gray-50 rounded-lg aspect-square"
               onMouseMove={handleMouseMove}
               onMouseEnter={() => setShowZoom(true)}
               onMouseLeave={() => setShowZoom(false)}
               ref={imageRef}
             >
-              <img
-                src={product.images[activeImage] || "/placeholder.svg"}
-                alt={product.title}
-                className="w-full h-full object-cover"
-              />
+              {hasDiscount && (
+                <div className="absolute top-4 left-4 z-10 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                  {product.discountPercentage}% OFF
+                </div>
+              )}
+
+              <div className="absolute top-4 right-4 z-10 flex space-x-2">
+                <button className="bg-white rounded-full p-2 shadow-md hover:bg-gray-100 transition-colors">
+                  <Heart className="h-5 w-5 text-gray-600" />
+                </button>
+                <button className="bg-white rounded-full p-2 shadow-md hover:bg-gray-100 transition-colors">
+                  <Share2 className="h-5 w-5 text-gray-600" />
+                </button>
+              </div>
+
+              <div className="h-full w-full relative">
+                <Image
+                  src={product.images[activeImage] || "/placeholder.svg"}
+                  alt={product.title}
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
 
               {/* Zoom overlay */}
               {showZoom && (
@@ -204,51 +259,81 @@ export default function ProductDetail() {
             </div>
 
             {/* Thumbnail Images */}
-            <div className="flex space-x-2 overflow-x-auto pb-2">
+            <div className="flex space-x-3 overflow-x-auto pb-2">
               {product.images.map((image, index) => (
                 <button
                   key={index}
-                  className={`flex-shrink-0 w-20 h-20 border-2 ${activeImage === index ? "border-gray-800" : "border-transparent"}`}
+                  className={`flex-shrink-0 w-24 h-24 rounded-md overflow-hidden transition-all ${
+                    activeImage === index
+                      ? "ring-2 ring-offset-2 ring-amber-400"
+                      : "ring-1 ring-gray-200 hover:ring-gray-300"
+                  }`}
                   onClick={() => setActiveImage(index)}
                 >
-                  <img
-                    src={image || "/placeholder.svg"}
-                    alt={`${product.title} - View ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
+                  <div className="relative h-full w-full">
+                    <Image
+                      src={image || "/placeholder.svg"}
+                      alt={`${product.title} - View ${index + 1}`}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
                 </button>
               ))}
             </div>
           </div>
 
           {/* Product Info */}
-          <div className="space-y-6">
-            {/* Title and Price */}
+          <div className="space-y-8">
+            {/* Title and Rating */}
             <div>
-              <h1 className="text-2xl md:text-3xl font-serif mb-2">{product.title}</h1>
-              <div className="flex items-baseline space-x-3 mb-4">
-                <span className="text-2xl font-medium">₹{discountedPrice.toLocaleString("en-IN")}</span>
+              <h1 className="text-2xl md:text-3xl font-serif mb-3">{product.title}</h1>
+
+              <div className="flex items-center mb-4">
+                <div className="flex items-center">
+                  {renderRatingStars(product.reviews.average)}
+                  <span className="ml-2 text-amber-500 font-medium">{product.reviews.average}</span>
+                </div>
+                <span className="mx-2 text-gray-300">|</span>
+                <span className="text-gray-500">{product.reviews.count} reviews</span>
+              </div>
+
+              {/* Price */}
+              <div className="flex items-baseline space-x-3 mb-2">
+                <span className="text-3xl font-medium" style={{ color: colors.primary }}>
+                  ₹{discountedPrice.toLocaleString("en-IN")}
+                </span>
                 {hasDiscount && (
                   <span className="text-gray-500 line-through">₹{product.price.toLocaleString("en-IN")}</span>
                 )}
                 {hasDiscount && (
-                  <span className="text-red-600 text-sm font-medium">{product.discountPercentage}% OFF</span>
+                  <span className="text-red-600 text-sm font-medium bg-red-50 px-2 py-0.5 rounded-full">
+                    {product.discountPercentage}% OFF
+                  </span>
                 )}
               </div>
               <p className="text-sm text-gray-500">Inclusive of all taxes</p>
             </div>
 
+            {/* Divider */}
+            <div className="border-t border-gray-100"></div>
+
             {/* Size Selection */}
             <div>
-              <h3 className="font-medium mb-3">Size</h3>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-medium">Select Size</h3>
+                <button className="text-sm font-medium underline" style={{ color: colors.primary }}>
+                  Size Guide
+                </button>
+              </div>
               <div className="flex flex-wrap gap-3">
                 {product.sizes.map((size) => (
                   <button
                     key={size}
-                    className={`h-10 w-10 flex items-center justify-center border ${
+                    className={`h-11 w-11 flex items-center justify-center rounded-full transition-all ${
                       selectedSize === size
-                        ? "border-gray-900 bg-gray-900 text-white"
-                        : "border-gray-300 hover:border-gray-400"
+                        ? "bg-amber-400 text-white shadow-md"
+                        : "border border-gray-300 hover:border-amber-400 hover:text-amber-500"
                     }`}
                     onClick={() => setSelectedSize(size)}
                   >
@@ -256,86 +341,154 @@ export default function ProductDetail() {
                   </button>
                 ))}
               </div>
-              <button className="mt-2 text-sm font-medium underline" style={{ color: colors.primary }}>
-                Size Guide
-              </button>
             </div>
 
             {/* Quantity */}
             <div>
               <h3 className="font-medium mb-3">Quantity</h3>
-              <div className="flex items-center border border-gray-300 inline-flex">
+              <div className="inline-flex items-center border border-gray-300 rounded-full overflow-hidden">
                 <button
-                  className="px-3 py-2 border-r border-gray-300"
+                  className="px-4 py-2 hover:bg-gray-100 transition-colors"
                   onClick={() => handleQuantityChange(-1)}
                   disabled={quantity <= 1}
                 >
                   <Minus className="h-4 w-4" />
                 </button>
-                <span className="px-6 py-2">{quantity}</span>
-                <button className="px-3 py-2 border-l border-gray-300" onClick={() => handleQuantityChange(1)}>
+                <span className="px-6 py-2 font-medium">{quantity}</span>
+                <button
+                  className="px-4 py-2 hover:bg-gray-100 transition-colors"
+                  onClick={() => handleQuantityChange(1)}
+                >
                   <Plus className="h-4 w-4" />
                 </button>
               </div>
             </div>
 
             {/* Add to Cart and Buy Now buttons */}
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex flex-col sm:flex-row gap-4">
               <button
-                className="flex-1 py-3 px-6 bg-white border border-gray-900 text-gray-900 font-medium hover:bg-gray-50 transition-colors"
+                className="flex-1 py-3.5 px-6 rounded-full border-2 border-amber-400 text-amber-500 font-medium hover:bg-amber-50 transition-colors flex items-center justify-center"
                 onClick={handleAddToCart}
               >
+                <ShoppingBag className="h-5 w-5 mr-2" />
                 Add to Cart
               </button>
               <button
-                className="flex-1 py-3 px-6 bg-gray-900 text-white font-medium hover:bg-gray-800 transition-colors"
+                className="flex-1 py-3.5 px-6 rounded-full bg-amber-400 text-white font-medium hover:bg-amber-500 transition-colors shadow-md"
                 onClick={handleBuyNow}
               >
                 Buy Now
               </button>
             </div>
 
-            {/* Wishlist and Share */}
-            <div className="flex space-x-6 pt-2">
-              <button className="flex items-center text-sm font-medium text-gray-600 hover:text-gray-900">
-                <Heart className="h-5 w-5 mr-2" />
-                Add to Wishlist
-              </button>
-              <button className="flex items-center text-sm font-medium text-gray-600 hover:text-gray-900">
-                <Share2 className="h-5 w-5 mr-2" />
-                Share
-              </button>
-            </div>
-
             {/* Delivery Info */}
-            <div className="border-t border-gray-200 pt-6 space-y-4">
+            <div className="bg-gray-50 rounded-lg p-4 space-y-3">
               <div className="flex items-center">
-                <Check className="h-5 w-5 mr-3 text-green-600" />
-                <span className="text-sm">Free delivery on all orders above ₹999</span>
+                <Truck className="h-5 w-5 mr-3 text-amber-500" />
+                <div>
+                  <p className="text-sm font-medium">Free Delivery</p>
+                  <p className="text-xs text-gray-500">On orders above ₹999</p>
+                </div>
               </div>
               <div className="flex items-center">
-                <Check className="h-5 w-5 mr-3 text-green-600" />
-                <span className="text-sm">Easy 15-day returns and exchanges</span>
+                <RefreshCw className="h-5 w-5 mr-3 text-amber-500" />
+                <div>
+                  <p className="text-sm font-medium">Easy Returns & Exchanges</p>
+                  <p className="text-xs text-gray-500">15-day return policy</p>
+                </div>
+              </div>
+              <div className="flex items-center">
+                <Shield className="h-5 w-5 mr-3 text-amber-500" />
+                <div>
+                  <p className="text-sm font-medium">Quality Assurance</p>
+                  <p className="text-xs text-gray-500">100% authentic products</p>
+                </div>
               </div>
             </div>
 
-            {/* Product Description */}
-            <div className="border-t border-gray-200 pt-6">
-              <h3 className="font-medium mb-3">Description</h3>
-              <p className="text-gray-600">{product.description}</p>
-            </div>
+            {/* Product Tabs */}
+            <div className="border-t border-gray-100 pt-6">
+              <div className="flex border-b border-gray-200">
+                <button
+                  className={`pb-3 px-4 text-sm font-medium ${activeTab === "description" ? "border-b-2 border-amber-400 text-amber-500" : "text-gray-500 hover:text-gray-700"}`}
+                  onClick={() => setActiveTab("description")}
+                >
+                  Description
+                </button>
+                <button
+                  className={`pb-3 px-4 text-sm font-medium ${activeTab === "specifications" ? "border-b-2 border-amber-400 text-amber-500" : "text-gray-500 hover:text-gray-700"}`}
+                  onClick={() => setActiveTab("specifications")}
+                >
+                  Specifications
+                </button>
+                <button
+                  className={`pb-3 px-4 text-sm font-medium ${activeTab === "reviews" ? "border-b-2 border-amber-400 text-amber-500" : "text-gray-500 hover:text-gray-700"}`}
+                  onClick={() => setActiveTab("reviews")}
+                >
+                  Reviews ({product.reviews.count})
+                </button>
+              </div>
 
-            {/* Product Details */}
-            <div className="border-t border-gray-200 pt-6">
-              <h3 className="font-medium mb-3">Product Details</h3>
-              <ul className="space-y-2 text-gray-600">
-                {Object.entries(product.details).map(([key, value]) => (
-                  <li key={key} className="flex">
-                    <span className="w-24 font-medium text-gray-900 capitalize">{key}:</span>
-                    <span>{value}</span>
-                  </li>
-                ))}
-              </ul>
+              <div className="py-4">
+                {activeTab === "description" && (
+                  <div className="prose prose-sm max-w-none text-gray-600">
+                    <p>{product.description}</p>
+                    <p className="mt-2">
+                      Our sarees are handcrafted by skilled artisans using traditional techniques passed down through
+                      generations. Each piece is unique and showcases the rich heritage of Indian craftsmanship.
+                    </p>
+                  </div>
+                )}
+
+                {activeTab === "specifications" && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {product.specifications.map((spec, index) => (
+                      <div key={index} className="flex">
+                        <span className="w-32 font-medium text-gray-900">{spec.name}:</span>
+                        <span className="text-gray-600">{spec.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {activeTab === "reviews" && (
+                  <div className="space-y-4">
+                    <div className="flex items-center">
+                      <div className="flex-1">
+                        <div className="flex items-baseline">
+                          <span className="text-3xl font-medium">{product.reviews.average}</span>
+                          <span className="text-sm text-gray-500 ml-1">out of 5</span>
+                        </div>
+                        <div className="flex mt-1">{renderRatingStars(product.reviews.average)}</div>
+                        <p className="text-sm text-gray-500 mt-1">{product.reviews.count} reviews</p>
+                      </div>
+
+                      <div className="flex-1">
+                        {[5, 4, 3, 2, 1].map((rating) => {
+                          const percentage = (product.reviews.breakdown[rating] / product.reviews.count) * 100
+                          return (
+                            <div key={rating} className="flex items-center text-sm mb-1">
+                              <span className="w-3">{rating}</span>
+                              <Star className="w-3 h-3 text-amber-400 ml-1" />
+                              <div className="w-full bg-gray-200 rounded-full h-2 ml-2">
+                                <div
+                                  className="bg-amber-400 h-2 rounded-full"
+                                  style={{ width: `${percentage}%` }}
+                                ></div>
+                              </div>
+                              <span className="ml-2 text-gray-500 text-xs">{product.reviews.breakdown[rating]}</span>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+
+                    <button className="w-full py-2 border border-gray-300 rounded-md text-sm font-medium hover:bg-gray-50 transition-colors">
+                      Write a Review
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

@@ -1,11 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { updateQuantity, removeFromCart } from "../redux/slices/cartSlice"
 import Link from "next/link"
 import Navbar from "../Components/navbar"
-import { Minus, Plus, Trash2, ArrowLeft } from "lucide-react"
+import { Minus, Plus, Trash2, ArrowLeft, ShoppingBag, CreditCard, Gift, Truck, Clock, ShieldCheck } from "lucide-react"
+import Image from "next/image"
 
 export default function Cart() {
   const dispatch = useDispatch()
@@ -13,6 +14,8 @@ export default function Cart() {
   const [couponCode, setCouponCode] = useState("")
   const [couponApplied, setCouponApplied] = useState(false)
   const [discount, setDiscount] = useState(0)
+  const [deliveryOption, setDeliveryOption] = useState("standard")
+  const [estimatedDelivery, setEstimatedDelivery] = useState("5-7 business days")
 
   // Define theme colors
   const colors = {
@@ -22,6 +25,23 @@ export default function Cart() {
     dark: "#2d2626", // Almost black for text
     light: "#ffffff", // White for backgrounds
   }
+
+  // Update estimated delivery based on delivery option
+  useEffect(() => {
+    switch (deliveryOption) {
+      case "express":
+        setEstimatedDelivery("1-2 business days")
+        break
+      case "standard":
+        setEstimatedDelivery("5-7 business days")
+        break
+      case "economy":
+        setEstimatedDelivery("7-10 business days")
+        break
+      default:
+        setEstimatedDelivery("5-7 business days")
+    }
+  }, [deliveryOption])
 
   const handleQuantityChange = (id, change) => {
     const item = items.find((item) => item.id === id)
@@ -44,46 +64,21 @@ export default function Cart() {
   }
 
   const finalAmount = totalAmount - discount
+  const shippingCost = finalAmount >= 999 ? 0 : 99
+  const taxAmount = finalAmount * 0.18
+  const orderTotal = finalAmount + shippingCost + taxAmount
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
 
-      {/* Progress Bar */}
-      <div className="bg-gray-50 py-4 border-t border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-center">
-            <div className="flex items-center">
-              <div className="h-8 w-8 rounded-full bg-gray-900 text-white flex items-center justify-center text-sm font-medium">
-                1
-              </div>
-              <span className="ml-2 font-medium">BAG</span>
-            </div>
-            <div className="w-16 h-[1px] bg-gray-300 mx-2"></div>
-            <div className="flex items-center opacity-50">
-              <div className="h-8 w-8 rounded-full border border-gray-400 flex items-center justify-center text-sm font-medium">
-                2
-              </div>
-              <span className="ml-2 font-medium">ADDRESS</span>
-            </div>
-            <div className="w-16 h-[1px] bg-gray-300 mx-2"></div>
-            <div className="flex items-center opacity-50">
-              <div className="h-8 w-8 rounded-full border border-gray-400 flex items-center justify-center text-sm font-medium">
-                3
-              </div>
-              <span className="ml-2 font-medium">PAYMENT</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-8 md:py-12">
         {/* Cart Header */}
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-2xl md:text-3xl font-serif">
-            Cart: {totalQuantity} {totalQuantity === 1 ? "Item" : "Items"}
+            Your Shopping Bag {totalQuantity > 0 && `(${totalQuantity})`}
           </h1>
-          <Link href="/" className="flex items-center text-gray-600 hover:text-gray-900">
+          <Link href="/" className="flex items-center text-gray-600 hover:text-amber-500 transition-colors">
             <ArrowLeft className="h-4 w-4 mr-1" />
             Continue Shopping
           </Link>
@@ -96,144 +91,291 @@ export default function Cart() {
               {items.map((item) => (
                 <div
                   key={item.id}
-                  className="border border-gray-200 p-4 grid grid-cols-[100px,1fr] sm:grid-cols-[120px,1fr] gap-4"
+                  className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-300"
                 >
-                  <div className="aspect-square bg-gray-100">
-                    <img
-                      src={item.image || "/placeholder.svg"}
-                      alt={item.title}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-
-                  <div className="flex flex-col">
-                    <div className="flex justify-between">
-                      <h3 className="font-medium">{item.title}</h3>
-                      <button onClick={() => handleRemoveItem(item.id)} className="text-gray-400 hover:text-red-500">
-                        <Trash2 className="h-5 w-5" />
-                      </button>
+                  <div className="p-4 md:p-6 grid grid-cols-[100px,1fr] sm:grid-cols-[120px,1fr] gap-4 md:gap-6">
+                    <div className="aspect-square bg-gray-50 rounded-md overflow-hidden relative">
+                      <Image src={item.image || "/placeholder.svg"} alt={item.title} fill className="object-cover" />
                     </div>
 
-                    {item.selectedSize && <p className="text-sm text-gray-500 mt-1">Size: {item.selectedSize}</p>}
-
-                    <div className="mt-auto pt-4 flex flex-wrap items-end justify-between gap-4">
-                      <div className="flex items-center border border-gray-300">
+                    <div className="flex flex-col">
+                      <div className="flex justify-between">
+                        <div>
+                          <h3 className="font-medium text-gray-900">{item.title}</h3>
+                          <p className="text-sm text-gray-500 mt-1">
+                            {item.selectedSize && <span className="mr-2">Size: {item.selectedSize}</span>}
+                          </p>
+                        </div>
                         <button
-                          className="px-2 py-1"
-                          onClick={() => handleQuantityChange(item.id, -1)}
-                          disabled={item.quantity <= 1}
+                          onClick={() => handleRemoveItem(item.id)}
+                          className="text-gray-400 hover:text-red-500 transition-colors"
+                          aria-label="Remove item"
                         >
-                          <Minus className="h-4 w-4" />
-                        </button>
-                        <span className="px-4 py-1">{item.quantity}</span>
-                        <button className="px-2 py-1" onClick={() => handleQuantityChange(item.id, 1)}>
-                          <Plus className="h-4 w-4" />
+                          <Trash2 className="h-5 w-5" />
                         </button>
                       </div>
 
-                      <div className="text-right">
-                        <p className="font-medium">₹{(item.price * item.quantity).toLocaleString("en-IN")}</p>
+                      <div className="mt-auto pt-4 flex flex-wrap items-end justify-between gap-4">
+                        <div className="flex items-center border border-gray-200 rounded-full overflow-hidden">
+                          <button
+                            className="px-3 py-1 hover:bg-gray-50 transition-colors"
+                            onClick={() => handleQuantityChange(item.id, -1)}
+                            disabled={item.quantity <= 1}
+                            aria-label="Decrease quantity"
+                          >
+                            <Minus className="h-3 w-3" />
+                          </button>
+                          <span className="px-4 py-1 font-medium">{item.quantity}</span>
+                          <button
+                            className="px-3 py-1 hover:bg-gray-50 transition-colors"
+                            onClick={() => handleQuantityChange(item.id, 1)}
+                            aria-label="Increase quantity"
+                          >
+                            <Plus className="h-3 w-3" />
+                          </button>
+                        </div>
+
+                        <div className="text-right">
+                          <p className="font-medium text-gray-900">
+                            ₹{(item.price * item.quantity).toLocaleString("en-IN")}
+                          </p>
+                          <p className="text-xs text-gray-500 mt-1">₹{item.price.toLocaleString("en-IN")} each</p>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               ))}
+
+              {/* Delivery Options */}
+              <div className="bg-white rounded-lg shadow-sm p-6">
+                <h2 className="text-lg font-medium mb-4">Delivery Options</h2>
+
+                <div className="space-y-3">
+                  <label className="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                    <input
+                      type="radio"
+                      name="delivery"
+                      value="standard"
+                      checked={deliveryOption === "standard"}
+                      onChange={() => setDeliveryOption("standard")}
+                      className="h-4 w-4 text-amber-500 focus:ring-amber-500"
+                    />
+                    <div className="ml-3 flex-1">
+                      <p className="font-medium">Standard Delivery</p>
+                      <p className="text-sm text-gray-500">5-7 business days</p>
+                    </div>
+                    <span className="font-medium text-gray-900">Free</span>
+                  </label>
+
+                  <label className="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                    <input
+                      type="radio"
+                      name="delivery"
+                      value="express"
+                      checked={deliveryOption === "express"}
+                      onChange={() => setDeliveryOption("express")}
+                      className="h-4 w-4 text-amber-500 focus:ring-amber-500"
+                    />
+                    <div className="ml-3 flex-1">
+                      <p className="font-medium">Express Delivery</p>
+                      <p className="text-sm text-gray-500">1-2 business days</p>
+                    </div>
+                    <span className="font-medium text-gray-900">₹199</span>
+                  </label>
+
+                  <label className="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                    <input
+                      type="radio"
+                      name="delivery"
+                      value="economy"
+                      checked={deliveryOption === "economy"}
+                      onChange={() => setDeliveryOption("economy")}
+                      className="h-4 w-4 text-amber-500 focus:ring-amber-500"
+                    />
+                    <div className="ml-3 flex-1">
+                      <p className="font-medium">Economy Delivery</p>
+                      <p className="text-sm text-gray-500">7-10 business days</p>
+                    </div>
+                    <span className="font-medium text-gray-900">Free</span>
+                  </label>
+                </div>
+              </div>
+
+              {/* Gift Options */}
+              <div className="bg-white rounded-lg shadow-sm p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-medium">Gift Options</h2>
+                  <Gift className="h-5 w-5 text-amber-500" />
+                </div>
+
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="gift-wrap"
+                    className="h-4 w-4 text-amber-500 focus:ring-amber-500 rounded"
+                  />
+                  <label htmlFor="gift-wrap" className="ml-2 block text-sm">
+                    Add gift wrap for ₹99
+                  </label>
+                </div>
+
+                <div className="mt-4">
+                  <label htmlFor="gift-message" className="block text-sm font-medium text-gray-700 mb-1">
+                    Gift Message (Optional)
+                  </label>
+                  <textarea
+                    id="gift-message"
+                    rows={3}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    placeholder="Add your personal message here..."
+                  ></textarea>
+                </div>
+              </div>
             </div>
 
             {/* Order Summary */}
             <div className="lg:col-span-1">
-              <div className="border border-gray-200 p-6">
-                <h2 className="text-lg font-medium mb-4">Price Detail</h2>
+              <div className="bg-white rounded-lg shadow-sm p-6 sticky top-24">
+                <h2 className="text-lg font-medium mb-4">Order Summary</h2>
 
                 <div className="space-y-3 mb-6">
-                  <div className="flex justify-between">
-                    <span>Order Sub-total</span>
-                    <span>₹{totalAmount.toLocaleString("en-IN")}</span>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Subtotal ({totalQuantity} items)</span>
+                    <span className="font-medium">₹{totalAmount.toLocaleString("en-IN")}</span>
                   </div>
 
                   {couponApplied && (
-                    <div className="flex justify-between text-green-600">
-                      <span>Discount</span>
-                      <span>-₹{discount.toLocaleString("en-IN")}</span>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-green-600 flex items-center">
+                        Discount (NEW10)
+                        <button
+                          className="ml-1 text-xs underline"
+                          onClick={() => {
+                            setCouponApplied(false)
+                            setDiscount(0)
+                          }}
+                        >
+                          Remove
+                        </button>
+                      </span>
+                      <span className="text-green-600 font-medium">-₹{discount.toLocaleString("en-IN")}</span>
                     </div>
                   )}
 
-                  <div className="flex justify-between">
-                    <span>Delivery</span>
-                    <span className="text-green-600">FREE</span>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Shipping</span>
+                    <span className={shippingCost === 0 ? "text-green-600 font-medium" : "font-medium"}>
+                      {shippingCost === 0 ? "FREE" : `₹${shippingCost.toLocaleString("en-IN")}`}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Estimated Tax (18%)</span>
+                    <span className="font-medium">
+                      ₹{taxAmount.toLocaleString("en-IN", { maximumFractionDigits: 2 })}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Estimated Delivery</span>
+                    <span className="font-medium">{estimatedDelivery}</span>
                   </div>
                 </div>
 
                 <div className="border-t border-gray-200 pt-4 mb-6">
-                  <div className="flex justify-between font-medium">
-                    <span>Grand Total</span>
-                    <span>₹{finalAmount.toLocaleString("en-IN")}</span>
+                  <div className="flex justify-between font-medium text-lg">
+                    <span>Order Total</span>
+                    <span>₹{orderTotal.toLocaleString("en-IN", { maximumFractionDigits: 2 })}</span>
                   </div>
                   <p className="text-xs text-gray-500 mt-1">Inclusive of all taxes</p>
                 </div>
 
                 {/* Coupon Code */}
-                <div className="mb-6">
-                  <h3 className="font-medium mb-2">Apply Coupon Code</h3>
-                  <div className="flex">
-                    <input
-                      type="text"
-                      value={couponCode}
-                      onChange={(e) => setCouponCode(e.target.value)}
-                      placeholder="Enter coupon code"
-                      className="flex-grow border border-gray-300 px-3 py-2"
-                      disabled={couponApplied}
-                    />
-                    <button
-                      className="px-4 py-2 bg-gray-900 text-white font-medium disabled:bg-gray-400"
-                      onClick={handleApplyCoupon}
-                      disabled={couponApplied || !couponCode}
-                    >
-                      Apply
-                    </button>
+                {!couponApplied && (
+                  <div className="mb-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-medium">Apply Coupon Code</h3>
+                      <span className="text-xs text-amber-500">Try code "NEW10" for 10% off</span>
+                    </div>
+                    <div className="flex">
+                      <input
+                        type="text"
+                        value={couponCode}
+                        onChange={(e) => setCouponCode(e.target.value)}
+                        placeholder="Enter coupon code"
+                        className="flex-grow border border-gray-300 rounded-l-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                      />
+                      <button
+                        className="px-4 py-2 bg-amber-500 text-white font-medium rounded-r-md hover:bg-amber-600 transition-colors disabled:bg-gray-400"
+                        onClick={handleApplyCoupon}
+                        disabled={!couponCode}
+                      >
+                        Apply
+                      </button>
+                    </div>
                   </div>
-                  {couponApplied && <p className="text-green-600 text-sm mt-1">Coupon applied successfully!</p>}
-                  {!couponApplied && <p className="text-gray-500 text-xs mt-1">Try code "NEW10" for 10% off</p>}
-                </div>
+                )}
 
                 {/* Checkout Button */}
-                <button className="w-full py-3 bg-gray-900 text-white font-medium hover:bg-gray-800 transition-colors">
+                <button className="w-full py-3.5 rounded-full bg-amber-500 text-white font-medium hover:bg-amber-600 transition-colors shadow-md flex items-center justify-center">
+                  <CreditCard className="h-5 w-5 mr-2" />
                   PROCEED TO CHECKOUT
                 </button>
 
                 {/* Continue Shopping */}
                 <Link
                   href="/"
-                  className="w-full block text-center py-3 mt-3 border border-gray-300 font-medium hover:bg-gray-50 transition-colors"
+                  className="w-full block text-center py-3 mt-3 text-amber-500 font-medium hover:text-amber-600 transition-colors"
                 >
                   CONTINUE SHOPPING
                 </Link>
+
+                {/* Trust Badges */}
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="flex items-center">
+                      <ShieldCheck className="h-5 w-5 text-gray-400 mr-2" />
+                      <span className="text-xs text-gray-500">Secure Payment</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Truck className="h-5 w-5 text-gray-400 mr-2" />
+                      <span className="text-xs text-gray-500">Fast Shipping</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Clock className="h-5 w-5 text-gray-400 mr-2" />
+                      <span className="text-xs text-gray-500">24/7 Support</span>
+                    </div>
+                    <div className="flex items-center">
+                      <ShoppingBag className="h-5 w-5 text-gray-400 mr-2" />
+                      <span className="text-xs text-gray-500">Quality Products</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Payment Methods */}
+                <div className="mt-6 flex items-center justify-center space-x-2">
+                  <img src="/visa.svg" alt="Visa" className="h-6" />
+                  <img src="/mastercard.svg" alt="Mastercard" className="h-6" />
+                  <img src="/amex.svg" alt="American Express" className="h-6" />
+                  <img src="/paypal.svg" alt="PayPal" className="h-6" />
+                </div>
               </div>
             </div>
           </div>
         ) : (
-          <div className="text-center py-16">
-            <div className="inline-block p-6 rounded-full bg-gray-100 mb-6">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-12 w-12 text-gray-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                />
-              </svg>
+          <div className="bg-white rounded-lg shadow-sm p-12 text-center">
+            <div className="inline-block p-6 rounded-full bg-amber-50 mb-6">
+              <ShoppingBag className="h-12 w-12 text-amber-500" />
             </div>
             <h2 className="text-2xl font-serif mb-2">Your Cart is Empty</h2>
-            <p className="text-gray-600 mb-8">Looks like you haven't added any items to your cart yet.</p>
+            <p className="text-gray-600 mb-8 max-w-md mx-auto">
+              Looks like you haven't added any items to your cart yet. Explore our collection and find something you'll
+              love.
+            </p>
             <Link
               href="/"
-              className="inline-block px-8 py-3 bg-gray-900 text-white font-medium hover:bg-gray-800 transition-colors"
+              className="inline-block px-8 py-3 bg-amber-500 text-white font-medium rounded-full hover:bg-amber-600 transition-colors shadow-md"
             >
               Start Shopping
             </Link>

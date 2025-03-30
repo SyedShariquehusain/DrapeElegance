@@ -9,9 +9,9 @@ export default function BannerCarousel({ images }) {
     infinite: true,
     speed: 500,
     slidesToShow: 1,
-    slidesToScroll: 1,
+    slidesToScroll: 3,
     autoplay: true,
-    autoplaySpeed: 5000,
+    autoplaySpeed: 2000,
     pauseOnHover: true,
     arrows: true,
     responsive: [
