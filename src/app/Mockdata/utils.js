@@ -2,14 +2,14 @@
 export const bannerImages = [
     {
       id: 1,
-      src: "https://images.unsplash.com/photo-1643902724305-a905f9178cc6?q=80&w=2071&auto=format&fit=crop",
+      src: "https://images.unsplash.com/photo-1460493567047-d44949c477ae?q=80&w=3087&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       alt: "Elegant Silk Saree",
       title: "Timeless Elegance",
       subtitle: "Discover our exclusive collection of handwoven silk sarees"
     },
     {
       id: 2,
-      src: "https://images.unsplash.com/photo-1619932105054-427fbf521a8e?q=80&w=2070&auto=format&fit=crop",
+      src: "https://images.unsplash.com/photo-1503830232159-4b417691001e?q=80&w=3009&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       alt: "Wedding Collection",
       title: "Bridal Dreams",
       subtitle: "Exquisite sarees for your special day"
