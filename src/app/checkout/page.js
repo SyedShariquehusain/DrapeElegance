@@ -189,7 +189,7 @@ export default function Checkout() {
           {/* Order Summary */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-lg shadow-sm p-6 sticky top-24">
-              <h2 className="text-lg font-medium mb-6">Order Summary</h2>
+              <h2 className="text-lg font-medium mb-6 text-black">Order Summary</h2>
 
               <div className="space-y-4 mb-6">
                 {items.map((item) => (

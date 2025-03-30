@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { useAppContext } from "../Constants/AppContext"
-import { logoutUser } from "../Firebase/auth"
-import { useSelector } from "react-redux"
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAppContext } from "../Constants/AppContext";
+import { logoutUser } from "../Firebase/auth";
+import { useSelector } from "react-redux";
 
 export default function Navbar() {
   // Define theme colors
@@ -15,14 +15,14 @@ export default function Navbar() {
     accent: "#c78f6d", // Lighter brown for hover states
     dark: "#2d2626", // Almost black for text
     light: "#ffffff", // White for backgrounds
-  }
+  };
 
-  const [activeDropdown, setActiveDropdown] = useState(null)
-  const { state } = useAppContext()
-  const router = useRouter()
+  const [activeDropdown, setActiveDropdown] = useState(null);
+  const { state } = useAppContext();
+  const router = useRouter();
 
   // Get cart quantity from Redux store
-  const cartQuantity = useSelector((state) => state.cart.totalQuantity)
+  const cartQuantity = useSelector((state) => state.cart.totalQuantity);
 
   // Categories with their subcategories
   const categories = [
@@ -64,7 +64,10 @@ export default function Navbar() {
         { name: "Tunics", link: "/sarees/tunics" },
         { name: "3 Piece sets", link: "/sarees/3-piece-sets" },
         { name: "2 Piece sets", link: "/sarees/2-piece-sets" },
-        { name: "Unstitched Dress Materials", link: "/sarees/unstitched-materials" },
+        {
+          name: "Unstitched Dress Materials",
+          link: "/sarees/unstitched-materials",
+        },
         { name: "Kaftans", link: "/sarees/kaftans" },
       ],
     },
@@ -114,20 +117,20 @@ export default function Navbar() {
       name: "Online Exclusive",
       link: "/online-exclusive",
     },
-  ]
+  ];
 
   const handleDropdownToggle = (categoryName) => {
     if (activeDropdown === categoryName) {
-      setActiveDropdown(null)
+      setActiveDropdown(null);
     } else {
-      setActiveDropdown(categoryName)
+      setActiveDropdown(categoryName);
     }
-  }
+  };
 
   const handleSignOut = async () => {
-    await logoutUser()
-    router.push("/")
-  }
+    await logoutUser();
+    router.push("/");
+  };
 
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100">
@@ -135,7 +138,11 @@ export default function Navbar() {
         {/* Top bar with logo and icons */}
         <div className="flex items-center justify-between py-4 border-b border-gray-100">
           {/* Logo */}
-          <Link href="/" className="font-serif text-2xl font-bold tracking-wide" style={{ color: colors.primary }}>
+          <Link
+            href="/"
+            className="font-serif text-2xl font-bold tracking-wide"
+            style={{ color: colors.primary }}
+          >
             Drape Elegance
           </Link>
 
@@ -190,7 +197,9 @@ export default function Navbar() {
                       />
                     </svg>
                     <span className="text-xs font-medium max-w-[80px] truncate">
-                      {state.user.displayName || state.user.email?.split("@")[0] || "Account"}
+                      {state.user.displayName ||
+                        state.user.email?.split("@")[0] ||
+                        "Account"}
                     </span>
                   </button>
 
@@ -335,7 +344,12 @@ export default function Navbar() {
               <li key={category.name} className="relative group">
                 <button
                   className="py-2 text-sm font-medium transition-colors flex items-center hover:opacity-70"
-                  style={{ color: activeDropdown === category.name ? colors.primary : colors.dark }}
+                  style={{
+                    color:
+                      activeDropdown === category.name
+                        ? colors.primary
+                        : colors.dark,
+                  }}
                   onClick={() => handleDropdownToggle(category.name)}
                   aria-expanded={activeDropdown === category.name}
                 >
@@ -343,12 +357,19 @@ export default function Navbar() {
                   {category.subCategories && (
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className={`ml-1 h-4 w-4 transition-transform ${activeDropdown === category.name ? "rotate-180" : ""}`}
+                      className={`ml-1 h-4 w-4 transition-transform ${
+                        activeDropdown === category.name ? "rotate-180" : ""
+                      }`}
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
                     </svg>
                   )}
                 </button>
@@ -375,6 +396,5 @@ export default function Navbar() {
         </nav>
       </div>
     </header>
-  )
+  );
 }
-

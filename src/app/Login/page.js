@@ -142,7 +142,7 @@ export default function Login() {
           className="hidden md:flex md:w-1/2 bg-cover bg-center"
           style={{
             backgroundImage:
-              "url('https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?q=80&w=1887&auto=format&fit=crop')",
+              "url('https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?q=80&w=3087&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
             backgroundPosition: "center 30%",
           }}
         >
@@ -188,8 +188,8 @@ export default function Login() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-opacity-50"
-                    style={{ focusRing: colors.primary }}
+                    className="text-red-200 w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-opacity-10"
+                    style={{ focusRing: colors.secondary }}
                     placeholder="your@email.com"
                   />
                 </div>
@@ -234,7 +234,7 @@ export default function Login() {
             <div className="space-y-4">
               <button
                 onClick={handleGoogleLogin}
-                className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded font-medium transition-colors hover:bg-gray-50"
+                className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded font-medium transition-colors hover:bg-gray-50 text-black"
                 disabled={loading}
               >
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -260,7 +260,7 @@ export default function Login() {
 
               <button
                 onClick={handleFacebookLogin}
-                className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded font-medium transition-colors hover:bg-gray-50"
+                className="text-black w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded font-medium transition-colors hover:bg-gray-50"
                 disabled={loading}
               >
                 <svg className="w-5 h-5 mr-2" fill="#1877F2" viewBox="0 0 24 24">
@@ -271,7 +271,7 @@ export default function Login() {
 
               <button
                 onClick={handleGithubLogin}
-                className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded font-medium transition-colors hover:bg-gray-50"
+                className="text-black w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded font-medium transition-colors hover:bg-gray-50"
                 disabled={loading}
               >
                 <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
