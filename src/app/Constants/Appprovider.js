@@ -4,6 +4,8 @@ import { useState, useEffect } from "react"
 import { onAuthStateChanged } from "firebase/auth"
 import { auth } from "../Firebase/config"
 import AppContext from "./AppContext"
+import { Provider } from "react-redux"
+import { store } from "../redux/store"
 
 const AppProvider = ({ children }) => {
   const [state, setState] = useState({
@@ -33,7 +35,11 @@ const AppProvider = ({ children }) => {
     return () => unsubscribe()
   }, [])
 
-  return <AppContext.Provider value={{ state }}>{children}</AppContext.Provider>
+  return (
+    <Provider store={store}>
+      <AppContext.Provider value={{ state }}>{children}</AppContext.Provider>
+    </Provider>
+  )
 }
 
 export default AppProvider

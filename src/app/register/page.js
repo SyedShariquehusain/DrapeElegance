@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { useAppContext } from "../Constants/AppContext"
 import { signInWithGoogle, signInWithFacebook, signInWithGithub, registerWithEmailAndPassword } from "../Firebase/auth"
+import Image from "next/image"
 
 export default function Register() {
   const router = useRouter()
@@ -125,15 +126,15 @@ export default function Register() {
 
       <div className="flex flex-col md:flex-row flex-1">
         {/* Left side - elegant image */}
-        <div
-          className="hidden md:flex md:w-1/2 bg-cover bg-center"
-          style={{
-            backgroundImage:
-              "url('https://images.unsplash.com/photo-1610189844577-60bc4d9c771c?q=80&w=1887&auto=format&fit=crop')",
-            backgroundPosition: "center 30%",
-          }}
-        >
-          <div className="w-full h-full bg-black bg-opacity-20 flex items-center justify-center">
+        <div className="hidden md:block md:w-1/2 relative bg-cover bg-center">
+          <Image
+            src="https://images.unsplash.com/photo-1610189844577-60bc4d9c771c?q=80&w=1887&auto=format&fit=crop"
+            alt="Register background"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 w-full h-full bg-black bg-opacity-20 flex items-center justify-center">
             <div className="text-white text-center p-12">
               <h2 className="font-serif text-4xl font-light mb-6">Discover Timeless Elegance</h2>
               <p className="font-light text-lg opacity-90">

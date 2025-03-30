@@ -1,19 +1,35 @@
-import React from "react";
-import  Carousel  from "../Components/carasoul";
-
-
+"use client"
+import Slider from "react-slick"
+import "slick-carousel/slick/slick.css"
+import "slick-carousel/slick/slick-theme.css"
 
 export default function BannerCarousel({ images }) {
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 5000,
+    pauseOnHover: true,
+    arrows: true,
+    responsive: [
+      {
+        breakpoint: 768,
+        settings: {
+          arrows: false,
+        },
+      },
+    ],
+  }
+
   return (
     <div className="relative w-full h-[70vh] md:h-[70vh] overflow-hidden">
-      <Carousel>
+      <Slider {...settings}>
         {images.map((image) => (
-          <div key={image.id} className="relative h-full w-full overflow-hidden rounded-md">
-            <img
-              src={image.src}
-              alt={image.alt}
-              className="w-full h-full object-cover"
-            />
+          <div key={image.id} className="relative h-[70vh] w-full overflow-hidden">
+            <img src={image.src || "/placeholder.svg"} alt={image.alt} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-black/20 flex flex-col justify-end p-8 md:p-16">
               <h2 className="text-white text-3xl md:text-5xl font-serif mb-2">{image.title}</h2>
               <p className="text-white text-lg md:text-xl font-light mb-8">{image.subtitle}</p>
@@ -28,7 +44,8 @@ export default function BannerCarousel({ images }) {
             </div>
           </div>
         ))}
-      </Carousel>
+      </Slider>
     </div>
-  );
+  )
 }
+
