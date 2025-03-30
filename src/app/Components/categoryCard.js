@@ -7,15 +7,15 @@ export default function CategoryCard({ title, image, url }) {
         <img
           src={image || "/placeholder.svg"}
           alt={title}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
-        <div className="absolute inset-0 bg-black/10 transition-opacity group-hover:bg-black/20"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent transition-opacity group-hover:opacity-90"></div>
       </div>
-      <div className="absolute bottom-0 w-full bg-white/80 backdrop-blur-sm p-4 text-center">
-        <h3 className="text-lg font-serif font-medium">{title}</h3>
+      <div className="absolute bottom-0 w-full p-6 text-center">
+        <h3 className="text-xl font-serif font-medium text-white mb-2">{title}</h3>
         <Link
           href={url}
-          className="mt-2 inline-block text-sm text-gray-700 hover:text-black border-b border-gray-400 pb-0.5 transition-all"
+          className="inline-block bg-white/90 backdrop-blur-sm px-6 py-2 text-sm text-gray-900 hover:bg-white transition-all rounded-md opacity-0 transform translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 duration-300"
         >
           Browse Collection
         </Link>

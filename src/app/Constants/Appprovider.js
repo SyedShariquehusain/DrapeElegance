@@ -6,6 +6,7 @@ import { auth } from "../Firebase/config"
 import AppContext from "./AppContext"
 import { Provider } from "react-redux"
 import { store } from "../redux/store"
+import { ToastProvider } from "../Components/ui/toast-context"
 
 const AppProvider = ({ children }) => {
   const [state, setState] = useState({
@@ -37,7 +38,9 @@ const AppProvider = ({ children }) => {
 
   return (
     <Provider store={store}>
-      <AppContext.Provider value={{ state }}>{children}</AppContext.Provider>
+      <AppContext.Provider value={{ state }}>
+        <ToastProvider>{children}</ToastProvider>
+      </AppContext.Provider>
     </Provider>
   )
 }

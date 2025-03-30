@@ -6,14 +6,16 @@ import { useDispatch, useSelector } from "react-redux"
 import { addToCart } from "../../redux/slices/cartSlice"
 import { setSelectedProduct } from "../../redux/slices/productSlice"
 import Navbar from "../../Components/navbar"
-import { Heart, Share2, Minus, Plus, Star, ShoppingBag, Truck, RefreshCw, Shield } from "lucide-react"
+import { Heart, Share2, Minus, Plus, Star, ShoppingBag, Truck, RefreshCw, Shield, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
+import { useToast } from "../../Components/ui/toast-context"
 
 export default function ProductDetail() {
   const { id } = useParams()
   const router = useRouter()
   const dispatch = useDispatch()
+  const { addToast } = useToast()
   const allProducts = useSelector((state) => state.products.products)
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -27,10 +29,10 @@ export default function ProductDetail() {
 
   // Define theme colors
   const colors = {
-    primary: "#8a5a44", // Warm brown for primary accents
-    secondary: "#f4e9e1", // Light beige for subtle highlights
-    accent: "#c78f6d", // Lighter brown for hover states
-    dark: "#2d2626", // Almost black for text
+    primary: "#e11d48", // Rose-600 for primary accents (changed from brown to rose)
+    secondary: "#fff1f2", // Rose-50 for subtle highlights
+    accent: "#fb7185", // Rose-400 for hover states
+    dark: "#1f2937", // Gray-800 for text
     light: "#ffffff", // White for backgrounds
   }
 
@@ -128,11 +130,20 @@ export default function ProductDetail() {
         quantity,
       }),
     )
+
+    addToast({
+      message: `${product.title} added to your cart!`,
+      type: "success",
+    })
   }
 
   const handleBuyNow = () => {
     handleAddToCart()
     router.push("/cart")
+  }
+
+  const handleGoBack = () => {
+    router.back()
   }
 
   if (loading) {
@@ -156,7 +167,7 @@ export default function ProductDetail() {
         <div className="max-w-7xl mx-auto px-4 py-16 text-center">
           <h1 className="text-2xl font-serif mb-4">Product Not Found</h1>
           <p className="mb-8">The product you're looking for doesn't exist or has been removed.</p>
-          <Link href="/" className="inline-block px-6 py-3 bg-black text-white hover:bg-gray-800 transition-colors">
+          <Link href="/" className="inline-block px-6 py-3 bg-rose-600 text-white hover:bg-rose-700 transition-colors">
             Continue Shopping
           </Link>
         </div>
@@ -191,7 +202,12 @@ export default function ProductDetail() {
       {/* Breadcrumb */}
       <div className="bg-gray-50 py-3">
         <div className="max-w-7xl mx-auto px-4">
-          <nav className="flex text-sm">
+          <div className="flex items-center text-sm">
+            <button onClick={handleGoBack} className="flex items-center text-gray-500 hover:text-rose-600 mr-2">
+              <ArrowLeft className="w-4 h-4 mr-1" />
+              Back
+            </button>
+            <span className="mx-2 text-gray-400">/</span>
             <Link href="/" className="text-gray-500 hover:text-gray-700">
               Home
             </Link>
@@ -201,7 +217,7 @@ export default function ProductDetail() {
             </Link>
             <span className="mx-2 text-gray-400">/</span>
             <span className="text-gray-900 font-medium">{product.title}</span>
-          </nav>
+          </div>
         </div>
       </div>
 
@@ -219,7 +235,7 @@ export default function ProductDetail() {
               ref={imageRef}
             >
               {hasDiscount && (
-                <div className="absolute top-4 left-4 z-10 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                <div className="absolute top-4 left-4 z-10 bg-rose-600 text-white text-xs font-bold px-2 py-1 rounded-full">
                   {product.discountPercentage}% OFF
                 </div>
               )}
@@ -265,7 +281,7 @@ export default function ProductDetail() {
                   key={index}
                   className={`flex-shrink-0 w-24 h-24 rounded-md overflow-hidden transition-all ${
                     activeImage === index
-                      ? "ring-2 ring-offset-2 ring-amber-400"
+                      ? "ring-2 ring-offset-2 ring-rose-500"
                       : "ring-1 ring-gray-200 hover:ring-gray-300"
                   }`}
                   onClick={() => setActiveImage(index)}
@@ -300,14 +316,12 @@ export default function ProductDetail() {
 
               {/* Price */}
               <div className="flex items-baseline space-x-3 mb-2">
-                <span className="text-3xl font-medium" style={{ color: colors.primary }}>
-                  ₹{discountedPrice.toLocaleString("en-IN")}
-                </span>
+                <span className="text-3xl font-medium text-rose-600">₹{discountedPrice.toLocaleString("en-IN")}</span>
                 {hasDiscount && (
                   <span className="text-gray-500 line-through">₹{product.price.toLocaleString("en-IN")}</span>
                 )}
                 {hasDiscount && (
-                  <span className="text-red-600 text-sm font-medium bg-red-50 px-2 py-0.5 rounded-full">
+                  <span className="text-rose-600 text-sm font-medium bg-rose-50 px-2 py-0.5 rounded-full">
                     {product.discountPercentage}% OFF
                   </span>
                 )}
@@ -322,9 +336,7 @@ export default function ProductDetail() {
             <div>
               <div className="flex items-center justify-between mb-3">
                 <h3 className="font-medium">Select Size</h3>
-                <button className="text-sm font-medium underline" style={{ color: colors.primary }}>
-                  Size Guide
-                </button>
+                <button className="text-sm font-medium underline text-rose-600">Size Guide</button>
               </div>
               <div className="flex flex-wrap gap-3">
                 {product.sizes.map((size) => (
@@ -332,8 +344,8 @@ export default function ProductDetail() {
                     key={size}
                     className={`h-11 w-11 flex items-center justify-center rounded-full transition-all ${
                       selectedSize === size
-                        ? "bg-amber-400 text-white shadow-md"
-                        : "border border-gray-300 hover:border-amber-400 hover:text-amber-500"
+                        ? "bg-rose-600 text-white shadow-md"
+                        : "border border-gray-300 hover:border-rose-600 hover:text-rose-600"
                     }`}
                     onClick={() => setSelectedSize(size)}
                   >
@@ -367,14 +379,14 @@ export default function ProductDetail() {
             {/* Add to Cart and Buy Now buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
               <button
-                className="flex-1 py-3.5 px-6 rounded-full border-2 border-amber-400 text-amber-500 font-medium hover:bg-amber-50 transition-colors flex items-center justify-center"
+                className="flex-1 py-3.5 px-6 rounded-md border-2 border-rose-600 text-rose-600 font-medium hover:bg-rose-50 transition-colors flex items-center justify-center"
                 onClick={handleAddToCart}
               >
                 <ShoppingBag className="h-5 w-5 mr-2" />
                 Add to Cart
               </button>
               <button
-                className="flex-1 py-3.5 px-6 rounded-full bg-amber-400 text-white font-medium hover:bg-amber-500 transition-colors shadow-md"
+                className="flex-1 py-3.5 px-6 rounded-md bg-rose-600 text-white font-medium hover:bg-rose-700 transition-colors shadow-md"
                 onClick={handleBuyNow}
               >
                 Buy Now
@@ -384,21 +396,21 @@ export default function ProductDetail() {
             {/* Delivery Info */}
             <div className="bg-gray-50 rounded-lg p-4 space-y-3">
               <div className="flex items-center">
-                <Truck className="h-5 w-5 mr-3 text-amber-500" />
+                <Truck className="h-5 w-5 mr-3 text-rose-500" />
                 <div>
                   <p className="text-sm font-medium">Free Delivery</p>
                   <p className="text-xs text-gray-500">On orders above ₹999</p>
                 </div>
               </div>
               <div className="flex items-center">
-                <RefreshCw className="h-5 w-5 mr-3 text-amber-500" />
+                <RefreshCw className="h-5 w-5 mr-3 text-rose-500" />
                 <div>
                   <p className="text-sm font-medium">Easy Returns & Exchanges</p>
                   <p className="text-xs text-gray-500">15-day return policy</p>
                 </div>
               </div>
               <div className="flex items-center">
-                <Shield className="h-5 w-5 mr-3 text-amber-500" />
+                <Shield className="h-5 w-5 mr-3 text-rose-500" />
                 <div>
                   <p className="text-sm font-medium">Quality Assurance</p>
                   <p className="text-xs text-gray-500">100% authentic products</p>
@@ -410,19 +422,19 @@ export default function ProductDetail() {
             <div className="border-t border-gray-100 pt-6">
               <div className="flex border-b border-gray-200">
                 <button
-                  className={`pb-3 px-4 text-sm font-medium ${activeTab === "description" ? "border-b-2 border-amber-400 text-amber-500" : "text-gray-500 hover:text-gray-700"}`}
+                  className={`pb-3 px-4 text-sm font-medium ${activeTab === "description" ? "border-b-2 border-rose-600 text-rose-600" : "text-gray-500 hover:text-gray-700"}`}
                   onClick={() => setActiveTab("description")}
                 >
                   Description
                 </button>
                 <button
-                  className={`pb-3 px-4 text-sm font-medium ${activeTab === "specifications" ? "border-b-2 border-amber-400 text-amber-500" : "text-gray-500 hover:text-gray-700"}`}
+                  className={`pb-3 px-4 text-sm font-medium ${activeTab === "specifications" ? "border-b-2 border-rose-600 text-rose-600" : "text-gray-500 hover:text-gray-700"}`}
                   onClick={() => setActiveTab("specifications")}
                 >
                   Specifications
                 </button>
                 <button
-                  className={`pb-3 px-4 text-sm font-medium ${activeTab === "reviews" ? "border-b-2 border-amber-400 text-amber-500" : "text-gray-500 hover:text-gray-700"}`}
+                  className={`pb-3 px-4 text-sm font-medium ${activeTab === "reviews" ? "border-b-2 border-rose-600 text-rose-600" : "text-gray-500 hover:text-gray-700"}`}
                   onClick={() => setActiveTab("reviews")}
                 >
                   Reviews ({product.reviews.count})
