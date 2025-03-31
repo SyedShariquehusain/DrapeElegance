@@ -95,7 +95,7 @@ export default function Navbar() {
                     </span>
                   </button>
 
-                  <div className="absolute right-0 z-10 mt-2 w-48 bg-white border border-gray-100 shadow-lg py-2 hidden group-hover:block animate-in fade-in-50 zoom-in-95 duration-100">
+                  <div className="text-black absolute right-0 z-10 mt-2 w-48 bg-white border border-gray-100 shadow-lg py-2 hidden group-hover:block animate-in fade-in-50 zoom-in-95 duration-100">
                     <Link
                       href="/account"
                       className="block px-4 py-2 text-sm hover:bg-gray-50 transition-colors duration-150"
