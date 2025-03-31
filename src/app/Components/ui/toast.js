@@ -2,8 +2,19 @@
 
 import { useState, useEffect } from "react"
 import { X } from "lucide-react"
+import Link from "next/link"
 
-export const Toast = ({ message, type = "success", duration = 3000, onClose }) => {
+export const Toast = ({
+  message,
+  type = "success",
+  duration = 3000,
+  onClose,
+  productImage,
+  productTitle,
+  productPrice,
+  productSize,
+  productQuantity,
+}) => {
   const [isVisible, setIsVisible] = useState(true)
 
   useEffect(() => {
@@ -17,93 +28,56 @@ export const Toast = ({ message, type = "success", duration = 3000, onClose }) =
     return () => clearTimeout(timer)
   }, [duration, onClose])
 
-  const getBackgroundColor = () => {
-    switch (type) {
-      case "success":
-        return "bg-emerald-50 border-emerald-200"
-      case "error":
-        return "bg-red-50 border-red-200"
-      case "info":
-        return "bg-blue-50 border-blue-200"
-      default:
-        return "bg-emerald-50 border-emerald-200"
-    }
-  }
-
-  const getTextColor = () => {
-    switch (type) {
-      case "success":
-        return "text-emerald-800"
-      case "error":
-        return "text-red-800"
-      case "info":
-        return "text-blue-800"
-      default:
-        return "text-emerald-800"
-    }
-  }
-
-  const getIconColor = () => {
-    switch (type) {
-      case "success":
-        return "text-emerald-500"
-      case "error":
-        return "text-red-500"
-      case "info":
-        return "text-blue-500"
-      default:
-        return "text-emerald-500"
-    }
-  }
-
   return (
     <div
       className={`fixed top-4 right-4 z-50 max-w-md transform transition-all duration-300 ${
         isVisible ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
       }`}
     >
-      <div className={`flex items-center justify-between p-4 rounded-md shadow-md border ${getBackgroundColor()}`}>
-        <div className="flex items-center">
-          {type === "success" && (
-            <svg
-              className={`w-5 h-5 mr-3 ${getIconColor()}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-            </svg>
-          )}
-          {type === "error" && (
-            <svg
-              className={`w-5 h-5 mr-3 ${getIconColor()}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              ></path>
-            </svg>
-          )}
-          <p className={`text-sm font-medium ${getTextColor()}`}>{message}</p>
+      <div className="bg-white border border-gray-200 shadow-md">
+        {/* Header */}
+        <div className="flex items-center justify-between bg-green-500 text-white px-4 py-2">
+          <span className="text-sm font-medium">{message}</span>
+          <button
+            onClick={() => {
+              setIsVisible(false)
+              setTimeout(() => {
+                onClose && onClose()
+              }, 300)
+            }}
+            className="text-white hover:text-gray-200"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
-        <button
-          onClick={() => {
-            setIsVisible(false)
-            setTimeout(() => {
-              onClose && onClose()
-            }, 300)
-          }}
-          className={`ml-4 ${getIconColor()} hover:text-gray-700 focus:outline-none`}
-        >
-          <X className="w-4 h-4" />
-        </button>
+
+        {/* Product details */}
+        {productImage && productTitle && (
+          <div className="p-4 flex items-center">
+            <div className="h-16 w-16 bg-gray-100 overflow-hidden mr-4">
+              <img src={productImage || "/placeholder.svg"} alt={productTitle} className="h-full w-full object-cover" />
+            </div>
+            <div>
+              <p className="text-sm font-medium line-clamp-1">{productTitle}</p>
+              {productSize && productQuantity && (
+                <p className="text-xs text-gray-500">
+                  Size: {productSize} / Qty: {productQuantity}
+                </p>
+              )}
+              {productPrice && <p className="text-sm font-medium">₹{productPrice.toLocaleString("en-IN")}</p>}
+            </div>
+          </div>
+        )}
+
+        {/* View cart button */}
+        {message.toLowerCase().includes("bag") && (
+          <Link
+            href="/cart"
+            className="block w-full bg-gray-100 text-center py-2 text-sm font-medium hover:bg-gray-200 transition-colors"
+          >
+            VIEW BAG
+          </Link>
+        )}
       </div>
     </div>
   )
@@ -119,6 +93,11 @@ export const ToastContainer = ({ toasts, removeToast }) => {
           type={toast.type}
           duration={toast.duration}
           onClose={() => removeToast(toast.id)}
+          productImage={toast.productImage}
+          productTitle={toast.productTitle}
+          productPrice={toast.productPrice}
+          productSize={toast.productSize}
+          productQuantity={toast.productQuantity}
         />
       ))}
     </div>

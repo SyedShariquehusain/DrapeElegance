@@ -6,7 +6,7 @@ import { addToCart } from "../redux/slices/cartSlice"
 import { ShoppingBag, Heart } from "lucide-react"
 import { useToast } from "./ui/toast-context"
 
-export default function ProductCard({ product }) {
+export default function ProductCard({ product, onAddToWishlist, isInWishlist }) {
   const { id, title, price, image, discountPercentage } = product
   const hasDiscount = discountPercentage && discountPercentage > 0
   const discountedPrice = hasDiscount ? price - (price * discountPercentage) / 100 : price
@@ -25,11 +25,25 @@ export default function ProductCard({ product }) {
         quantity: 1,
       }),
     )
+
     addToast({
-      message: `${title} added to your cart!`,
+      message: `Added to bag`,
       type: "success",
-      duration: 3000,
+      productImage: image,
+      productTitle: title,
+      productPrice: discountedPrice,
+      productSize: "Free Size",
+      productQuantity: 1,
     })
+  }
+
+  const handleAddToWishlist = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    if (onAddToWishlist) {
+      onAddToWishlist(product)
+    }
   }
 
   return (
@@ -48,18 +62,11 @@ export default function ProductCard({ product }) {
           />
           <div className="absolute bottom-4 right-4 flex space-x-2">
             <button
-              onClick={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-                addToast({
-                  message: `${title} added to your wishlist!`,
-                  type: "success",
-                })
-              }}
+              onClick={handleAddToWishlist}
               className="bg-white/90 hover:bg-white p-2 rounded-full shadow-md transition-all transform hover:scale-110 z-10"
               aria-label="Add to wishlist"
             >
-              <Heart className="h-5 w-5 text-gray-800" />
+              <Heart className={`h-5 w-5 ${isInWishlist ? "fill-rose-600 text-rose-600" : "text-gray-800"}`} />
             </button>
             <button
               onClick={handleAddToCart}

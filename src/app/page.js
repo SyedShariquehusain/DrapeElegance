@@ -8,9 +8,15 @@ import Navbar from "./Components/navbar"
 import { bannerImages, categories, bestSellers, newArrivals } from "./Mockdata/utils"
 import { ArrowRight, TrendingUp, Star, Gift } from "lucide-react"
 import Link from "next/link"
+import { useDispatch, useSelector } from "react-redux"
+import { addToWishlist } from "./redux/slices/wishlistSlice"
+import { useToast } from "./Components/ui/toast-context"
 
 export default function App() {
   const [featuredProducts, setFeaturedProducts] = useState([])
+  const dispatch = useDispatch()
+  const { addToast } = useToast()
+  const wishlistItems = useSelector((state) => state.wishlist.items)
 
   // Combine and shuffle products for featured section
   useEffect(() => {
@@ -18,6 +24,21 @@ export default function App() {
     const shuffled = [...allProducts].sort(() => 0.5 - Math.random())
     setFeaturedProducts(shuffled.slice(0, 4))
   }, [])
+
+  const handleAddToWishlist = (product) => {
+    dispatch(addToWishlist(product))
+
+    addToast({
+      message: `${product.title} added to your wishlist!`,
+      type: "success",
+      productImage: product.image,
+      productTitle: product.title,
+    })
+  }
+
+  const isInWishlist = (productId) => {
+    return wishlistItems.some((item) => item.id === productId)
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -41,7 +62,12 @@ export default function App() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
           {featuredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard
+              key={product.id}
+              product={product}
+              onAddToWishlist={() => handleAddToWishlist(product)}
+              isInWishlist={isInWishlist(product.id)}
+            />
           ))}
         </div>
 
@@ -170,7 +196,12 @@ export default function App() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
           {bestSellers.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard
+              key={product.id}
+              product={product}
+              onAddToWishlist={() => handleAddToWishlist(product)}
+              isInWishlist={isInWishlist(product.id)}
+            />
           ))}
         </div>
         <div className="mt-8 text-center md:hidden">
@@ -196,7 +227,12 @@ export default function App() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
           {newArrivals.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard
+              key={product.id}
+              product={product}
+              onAddToWishlist={() => handleAddToWishlist(product)}
+              isInWishlist={isInWishlist(product.id)}
+            />
           ))}
         </div>
         <div className="mt-8 text-center md:hidden">
